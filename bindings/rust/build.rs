@@ -16,6 +16,7 @@ fn main() {
     #[cfg(target_os = "freebsd")]
     {
         c_config.flag("-fPIC");
+        c_config.flag("-fvisibility=default");
     }
 
     #[cfg(target_env = "msvc")]
@@ -35,9 +36,9 @@ fn main() {
     c_config.file(&scanner_path);
     println!("cargo:rerun-if-changed={}", scanner_path.to_str().unwrap());
 
-    // Set cargo link search path to help with symbol resolution
-    println!("cargo:rustc-link-search=native={}",
-             std::env::var("OUT_DIR").unwrap());
-
     c_config.compile("tree-sitter-rust");
+    
+    // Explicitly link the static library and use whole-archive to ensure symbols are exported
+    println!("cargo:rustc-link-lib=static=tree-sitter-rust");
+    println!("cargo:rustc-link-search=native={}", std::env::var("OUT_DIR").unwrap());
 }
