@@ -21,4 +21,5 @@ fn main() {
     cc.file(src_dir.join("scanner.c"));
 
     cc.compile("tree_sitter_rust");
+    println!("cargo:rustc-link-lib=static=tree_sitter_rust");
 }
